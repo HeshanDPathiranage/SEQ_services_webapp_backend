@@ -1,4 +1,4 @@
-const app = require('./dist/app.js').default || require('./dist/app.js');
+const app = require('./app.js').default || require('./app.js');
 const dotenv = require('dotenv');
 
 dotenv.config();
