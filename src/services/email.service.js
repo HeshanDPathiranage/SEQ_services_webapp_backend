@@ -106,16 +106,12 @@ async function sendEnquiryEmail(payload) {
   try {
     const transporter = nodemailer.createTransport({
       host: 'smtp.gmail.com',
-      port: 587,
-      secure: false,
-      requireTLS: true,
+      port: 465,
+      secure: true,
       family: 4,
       auth: {
         user: process.env.SMTP_USER || config.SMTP_USER,
         pass: (process.env.SMTP_PASS || config.SMTP_PASS).replace(/\s+/g, ''),
-      },
-      tls: {
-        rejectUnauthorized: false,
       },
     });
 
