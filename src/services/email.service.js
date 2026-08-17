@@ -2,7 +2,7 @@ const nodemailer = require('nodemailer');
 const { config } = require('../config/env');
 
 async function sendEnquiryEmail(payload) {
-  const adminEmail = config.EMAIL_TO || 'bharanamihijaya@gmail.com';
+  const adminEmail = config.EMAIL_TO || 'dilankaheshan859@gmail.com';
   const timestamp = new Date().toLocaleString('en-AU', { timeZone: 'Australia/Brisbane' });
 
   const html = `

@@ -3,7 +3,7 @@ import { config } from '../config/env';
 import { EnquiryPayload } from '../types/enquiry.types';
 
 export async function sendEnquiryEmail(payload: EnquiryPayload) {
-  const adminEmail = config.EMAIL_TO || 'bharanamihijaya@gmail.com';
+  const adminEmail = config.EMAIL_TO || 'dilankaheshan859@gmail.com';
   const timestamp = new Date().toLocaleString('en-AU', { timeZone: 'Australia/Brisbane' });
 
   const html = `
