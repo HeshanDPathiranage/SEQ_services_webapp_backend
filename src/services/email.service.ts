@@ -106,18 +106,18 @@ export async function sendEnquiryEmail(payload: EnquiryPayload) {
 
   try {
     const transporter = nodemailer.createTransport({
-      host: config.SMTP_HOST || 'smtp.gmail.com',
+      host: 'smtp.gmail.com',
       port: 587,
       secure: false,
       requireTLS: true,
+      family: 4,
       auth: {
-        user: config.SMTP_USER,
-        pass: config.SMTP_PASS.replace(/\s+/g, ''),
+        user: process.env.SMTP_USER || config.SMTP_USER,
+        pass: (process.env.SMTP_PASS || config.SMTP_PASS).replace(/\s+/g, ''),
       },
       tls: {
         rejectUnauthorized: false,
       },
-      family: 4, // Force IPv4 usage to fix ENETUNREACH
     } as any);
 
     await transporter.sendMail({
