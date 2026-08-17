@@ -104,31 +104,21 @@ async function sendEnquiryEmail(payload) {
   }
 
   try {
-    const isGmail = config.SMTP_HOST.includes('gmail') || config.SMTP_USER.includes('@gmail.com');
-
-    const transporter = nodemailer.createTransport(
-      isGmail
-        ? {
-            service: 'gmail',
-            auth: {
-              user: config.SMTP_USER,
-              pass: config.SMTP_PASS.replace(/\s+/g, ''),
-            },
-          }
-        : {
-            host: config.SMTP_HOST,
-            port: Number(config.SMTP_PORT) || 465,
-            secure: Number(config.SMTP_PORT) === 465,
-            family: 4,
-            auth: {
-              user: config.SMTP_USER,
-              pass: config.SMTP_PASS.replace(/\s+/g, ''),
-            },
-            tls: {
-              rejectUnauthorized: false,
-            },
-          }
-    );
+    const transporter = nodemailer.createTransport({
+      host: config.SMTP_HOST || 'smtp.gmail.com',
+      port: 465,
+      secure: true,
+      auth: {
+        user: config.SMTP_USER,
+        pass: config.SMTP_PASS.replace(/\s+/g, ''),
+      },
+      tls: {
+        rejectUnauthorized: false,
+      },
+      connectionTimeout: 10000,
+      greetingTimeout: 10000,
+      socketTimeout: 15000,
+    });
 
     await transporter.sendMail({
       from: config.EMAIL_FROM,
