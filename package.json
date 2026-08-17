@@ -2,11 +2,10 @@
   "name": "seq-services-backend",
   "private": true,
   "version": "0.1.0",
-  "main": "dist/index.js",
+  "main": "index.js",
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
-    "build": "tsc",
-    "start": "node dist/index.js",
+    "start": "node index.js",
     "lint": "eslint . --ext .ts"
   },
   "dependencies": {
@@ -15,6 +14,8 @@
     "express": "^4.19.4",
     "helmet": "^7.0.0",
     "nodemailer": "^9.0.3",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.2",
     "zod": "^4.4.3"
   },
   "devDependencies": {
@@ -27,7 +28,6 @@
     "eslint-plugin-import": "^2.29.4",
     "eslint-plugin-n": "^15.0.0",
     "eslint-plugin-promise": "^6.1.1",
-    "ts-node-dev": "^2.0.0",
-    "typescript": "^5.6.2"
+    "ts-node-dev": "^2.0.0"
   }
 }
