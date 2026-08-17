@@ -117,6 +117,7 @@ export async function sendEnquiryEmail(payload: EnquiryPayload) {
       tls: {
         rejectUnauthorized: false,
       },
+      family: 4, // Force IPv4 usage to fix ENETUNREACH
     } as any);
 
     await transporter.sendMail({
