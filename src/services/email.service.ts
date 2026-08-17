@@ -107,8 +107,9 @@ export async function sendEnquiryEmail(payload: EnquiryPayload) {
   try {
     const transporter = nodemailer.createTransport({
       host: config.SMTP_HOST || 'smtp.gmail.com',
-      port: 465,
-      secure: true,
+      port: 587,
+      secure: false,
+      requireTLS: true,
       auth: {
         user: config.SMTP_USER,
         pass: config.SMTP_PASS.replace(/\s+/g, ''),
@@ -116,9 +117,6 @@ export async function sendEnquiryEmail(payload: EnquiryPayload) {
       tls: {
         rejectUnauthorized: false,
       },
-      connectionTimeout: 10000,
-      greetingTimeout: 10000,
-      socketTimeout: 15000,
     } as any);
 
     await transporter.sendMail({
