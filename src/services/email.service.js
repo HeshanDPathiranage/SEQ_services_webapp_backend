@@ -11,12 +11,13 @@ async function sendEnquiryEmail(payload) {
       <head>
         <meta charset="utf-8">
         <style>
+          /* Base Styles */
           body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f4f6f9; margin: 0; padding: 20px; color: #333; }
           .container { max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
-          .header { background: linear-gradient(135deg, #0052CC 0%, #003d99 100%); padding: 30px 24px; text-align: center; color: #ffffff; }
-          .header h1 { margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -0.5px; }
-          .header p { margin: 6px 0 0 0; font-size: 14px; opacity: 0.9; }
-          .badge { display: inline-block; background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; margin-top: 10px; }
+          .header { background-color: #0052CC !important; background: linear-gradient(135deg, #0052CC 0%, #003d99 100%); padding: 30px 24px; text-align: center; color: #ffffff !important; }
+          .header h1 { margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -0.5px; color: #ffffff !important; }
+          .header p { margin: 6px 0 0 0; font-size: 14px; opacity: 0.9; color: #ffffff !important; }
+          .badge { display: inline-block; background-color: rgba(255,255,255,0.2) !important; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; margin-top: 10px; color: #ffffff !important; }
           .content { padding: 30px 24px; }
           .section-title { font-size: 13px; font-weight: 700; text-transform: uppercase; color: #64748b; letter-spacing: 0.5px; margin-bottom: 12px; }
           .info-table { width: 100%; border-collapse: collapse; margin-bottom: 24px; }
@@ -26,14 +27,26 @@ async function sendEnquiryEmail(payload) {
           .message-box { background: #f8fafc; border-left: 4px solid #0052CC; padding: 16px; border-radius: 8px; font-size: 14px; color: #334155; line-height: 1.6; white-space: pre-wrap; }
           .footer { background: #f8fafc; padding: 16px 24px; text-align: center; font-size: 12px; color: #94a3b8; border-top: 1px solid #f1f5f9; }
           .action-btn { display: inline-block; background: #0052CC; color: #ffffff !important; text-decoration: none; padding: 12px 24px; border-radius: 8px; font-size: 14px; font-weight: 600; margin-top: 20px; text-align: center; }
+          
+          /* Dark Mode Fallbacks */
+          @media (prefers-color-scheme: dark) {
+            body { background-color: #0f172a !important; color: #f8fafc !important; }
+            .container { background-color: #1e293b !important; border-color: #334155 !important; }
+            .header { background-color: #0052CC !important; }
+            .info-table td.label { color: #cbd5e1 !important; }
+            .info-table td.value { color: #f8fafc !important; }
+            .info-table td { border-bottom-color: #334155 !important; }
+            .message-box { background-color: #0f172a !important; color: #e2e8f0 !important; }
+            .footer { background-color: #0f172a !important; border-top-color: #334155 !important; }
+          }
         </style>
       </head>
       <body>
         <div class="container">
-          <div class="header">
-            <h1>New Quotation Request</h1>
-            <p>SEQ Services Web Application</p>
-            <div class="badge">${timestamp} AEST</div>
+          <div class="header" style="background-color: #0052CC; text-align: center; padding: 30px 24px;">
+            <h1 style="color: #ffffff; margin: 0; font-size: 22px; font-weight: 700;">New Quotation Request</h1>
+            <p style="color: #ffffff; margin: 6px 0 0 0; font-size: 14px;">SEQ Services Web Application</p>
+            <div class="badge" style="color: #ffffff; background-color: #3377db; padding: 4px 12px; border-radius: 20px; display: inline-block; margin-top: 10px; font-size: 12px; font-weight: 600;">${timestamp} AEST</div>
           </div>
           <div class="content">
             <div class="section-title">Client Details</div>
