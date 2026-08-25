@@ -1,8 +1,9 @@
 import { sendEnquiryEmail } from './src/services/email.service';
 import { config } from './src/config/env';
 
-// Override the EMAIL_TO config just for this run
-config.EMAIL_TO = 'IT24103939@my.sliit.lk';
+// Use EMAIL_TO from environment or fallback
+const targetEmail = process.env.EMAIL_TO || config.EMAIL_TO || 'admin@seqservices.com.au';
+config.EMAIL_TO = targetEmail;
 
 const payload = {
   name: "Jane Smith (New Test)",

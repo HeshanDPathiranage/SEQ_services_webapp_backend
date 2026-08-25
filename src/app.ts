@@ -4,25 +4,49 @@ import helmet from 'helmet';
 import enquiryRoute from './routes/enquiry.route';
 import { errorHandler } from './middleware/errorHandler';
 import { rateLimiter } from './middleware/rateLimiter';
-import dotenv from 'dotenv';
-
-dotenv.config();
+import { config } from './config/env';
 
 const app = express();
 
-app.use(helmet());
-app.use(express.json());
+// Security HTTP headers
+app.use(
+  helmet({
+    contentSecurityPolicy: false, // Managed at gateway/frontend or CDN
+    crossOriginEmbedderPolicy: false,
+  })
+);
 
-// CORS configuration using process.env.API_ORIGIN (supports single origin or comma-separated origins)
-const apiOrigin = process.env.API_ORIGIN;
-const originOption = apiOrigin 
-  ? (apiOrigin.includes(',') ? apiOrigin.split(',').map(o => o.trim()) : apiOrigin)
-  : '*';
+app.use(express.json({ limit: '100kb' })); // Body limit to prevent payload flooding
 
-app.use(cors({
-  origin: originOption,
-  credentials: true
-}));
+// Strict CORS configuration
+const defaultAllowedOrigins = [
+  'https://seqservices.com.au',
+  'https://www.seqservices.com.au',
+  ...(config.NODE_ENV !== 'production'
+    ? ['http://localhost:3000', 'http://localhost:3001', 'http://127.0.0.1:3000']
+    : []),
+];
+
+const envOrigins = config.API_ORIGIN
+  ? config.API_ORIGIN.split(',').map((o) => o.trim()).filter(Boolean)
+  : [];
+
+const allowedOrigins = Array.from(new Set([...defaultAllowedOrigins, ...envOrigins]));
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin) || (config.NODE_ENV !== 'production' && origin.startsWith('http://localhost:'))) {
+        return callback(null, true);
+      }
+      return callback(new Error('Blocked by CORS policy'));
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  })
+);
 
 app.use(rateLimiter);
 app.use('/api/enquiry', enquiryRoute);

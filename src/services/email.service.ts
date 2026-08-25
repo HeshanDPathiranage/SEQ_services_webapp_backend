@@ -3,8 +3,27 @@ import { config } from '../config/env';
 import { EnquiryPayload } from '../types/enquiry.types';
 
 export async function sendEnquiryEmail(payload: EnquiryPayload) {
-  const adminEmail = config.EMAIL_TO || 'dilankaheshan859@gmail.com';
+  const adminEmail = config.EMAIL_TO || 'admin@seqservices.com.au';
   const timestamp = new Date().toLocaleString('en-AU', { timeZone: 'Australia/Brisbane' });
+
+  const textBody = `
+New Quotation Request - SEQ Services
+====================================
+Timestamp: ${timestamp} AEST
+
+Client Details:
+- Name: ${payload.name}
+${payload.companyName ? `- Company: ${payload.companyName}\n` : ''}- Email: ${payload.email}
+- Phone: ${payload.phone}
+- Location: ${payload.location}
+${payload.serviceCategory ? `- Category: ${payload.serviceCategory}\n` : ''}- Service Required: ${payload.serviceRequired}
+
+Message / Requirements:
+${payload.message}
+
+------------------------------------
+Reply to customer: ${payload.email}
+  `.trim();
 
   const html = `
     <!DOCTYPE html>
@@ -93,8 +112,7 @@ export async function sendEnquiryEmail(payload: EnquiryPayload) {
             </div>
           </div>
           <div class="footer" style="background-color: #f8fafc; padding: 16px 24px; text-align: center; font-size: 12px; color: #94a3b8; border-top: 1px solid #f1f5f9;">
-            This message was generated from your SEQ Services website quotation form.<br>
-            Target Admin Email: ${adminEmail}
+            This message was generated from your SEQ Services website quotation form.
           </div>
         </div>
       </body>
@@ -103,30 +121,27 @@ export async function sendEnquiryEmail(payload: EnquiryPayload) {
 
   // Check if SMTP is configured
   if (!config.SMTP_HOST || !config.SMTP_USER) {
-    console.log('----------------------------------------------------');
-    console.log(`[DEV MODE] Email to Admin (${adminEmail}):`);
-    console.log(`Subject: New Quotation Request - ${payload.serviceRequired}`);
-    console.log(`From: ${payload.name} (${payload.email})`);
-    console.log(`Company: ${payload.companyName || 'N/A'}`);
-    console.log(`Phone: ${payload.phone}`);
-    console.log(`Location: ${payload.location}`);
-    console.log(`Category: ${payload.serviceCategory || 'N/A'}`);
-    console.log(`Service Required: ${payload.serviceRequired}`);
-    console.log(`Message: ${payload.message}`);
-    console.log('----------------------------------------------------');
-    console.log('NOTE: To send live emails, configure SMTP_HOST, SMTP_PORT, SMTP_USER, and SMTP_PASS in backend/.env');
+    if (config.NODE_ENV !== 'production') {
+      console.log('----------------------------------------------------');
+      console.log(`[DEV MODE] Email to Admin (${adminEmail}):`);
+      console.log(`Subject: New Quotation Request - ${payload.serviceRequired}`);
+      console.log(`Service Required: ${payload.serviceRequired}`);
+      console.log('----------------------------------------------------');
+      console.log('NOTE: To send live emails, configure SMTP_HOST, SMTP_PORT, SMTP_USER, and SMTP_PASS in backend environment.');
+    }
     return;
   }
 
   try {
+    const isSecurePort = config.SMTP_PORT === 465;
     const transporter = nodemailer.createTransport({
-      host: 'smtp.gmail.com',
-      port: 465,
-      secure: true,
+      host: config.SMTP_HOST || 'smtp.gmail.com',
+      port: config.SMTP_PORT || 587,
+      secure: isSecurePort,
       family: 4,
       auth: {
-        user: process.env.SMTP_USER || config.SMTP_USER,
-        pass: (process.env.SMTP_PASS || config.SMTP_PASS).replace(/\s+/g, ''),
+        user: config.SMTP_USER,
+        pass: config.SMTP_PASS.replace(/\s+/g, ''),
       },
     } as any);
 
@@ -135,18 +150,16 @@ export async function sendEnquiryEmail(payload: EnquiryPayload) {
       to: adminEmail,
       replyTo: payload.email,
       subject: `New Quotation Request: ${payload.serviceRequired} - ${payload.name}`,
+      text: textBody,
       html,
     });
   } catch (err: any) {
-    console.error('SMTP Email sending failed:', err?.message || err);
-    console.log('----------------------------------------------------');
-    console.log(`[ENQUIRY BACKUP LOG] Saved Quotation Request for Admin (${adminEmail}):`);
-    console.log(`From: ${payload.name} (${payload.email})`);
-    console.log(`Phone: ${payload.phone}`);
-    console.log(`Location: ${payload.location}`);
-    console.log(`Service Required: ${payload.serviceRequired}`);
-    console.log(`Message: ${payload.message}`);
-    console.log('----------------------------------------------------');
+    if (config.NODE_ENV !== 'production') {
+      console.error('SMTP Email sending failed:', err?.message || err);
+    } else {
+      console.error('SMTP Email sending failed.');
+    }
+    throw new Error('Email delivery failed.');
   }
 }
 
@@ -158,4 +171,3 @@ function escapeHtml(text: string): string {
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#039;');
 }
-
